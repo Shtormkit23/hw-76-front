@@ -7,6 +7,8 @@ import Messages from "../../component/Messages/Messages";
 
 const Chat = () => {
     const state = useSelector(state => state);
+    const posts = useSelector(state => state.posts);
+    const datetime = useSelector(state => state.datetime);
     const dispatch = useDispatch();
 
     const changeMessage = input => {
@@ -22,16 +24,16 @@ const Chat = () => {
         dispatch(addMessageAction(messageData));
     };
 
-    dispatch(getMessages())
+    useEffect(() => {
+        dispatch(getMessages());
+    }, [dispatch]);
 
     useEffect(() => {
         let interval = setInterval (() => {
-            dispatch(getLastMessages());
+            dispatch(getLastMessages(datetime, posts));
         },2000)
         return () => clearInterval(interval);
-    });
-
-
+    }, [dispatch, datetime, posts]);
     return (
         <div className="chat">
             <div className="messages">

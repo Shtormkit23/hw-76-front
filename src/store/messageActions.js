@@ -9,8 +9,8 @@ const getMessagesAction = (data, datetime) => {
     return {type: GET_MESSAGES, data, datetime};
 };
 
-const getLastMessagesAction = (data, datetime) => {
-    return {type: GET_LAST_MESSAGES, data, datetime};
+const getLastMessagesAction = (datetime, data) => {
+    return {type: GET_LAST_MESSAGES, datetime, data};
 };
 
 export const getMessages = () => {
@@ -27,20 +27,19 @@ export const getMessages = () => {
 export const getLastMessages = (datetime, data) => {
     return async (dispatch) => {
         try {
-            const response = await axiosApi.get(`/messages${datetime}`);
+            const response = await axiosApi.get(`/messages?datetime=${datetime}`);
+            response.data.length !== 0 && (datetime = `?datetime=${response.data[response.data.length-1].datetime}`);
             if (data.length === 0) {
-                data = response.data
+                data = response.data;
             } else {
-                // response.data.map(message => data.push(message))
-                console.log(response.data);
+                response.data.map(message => data.push(message));
             }
             dispatch(getLastMessagesAction(datetime, data));
         } catch (e) {
-            console.log(e);
+            console.log(e.request.responseText);
         }
     };
 };
-
 
 export const addMessageAction = messageData => {
     return dispatch => {
